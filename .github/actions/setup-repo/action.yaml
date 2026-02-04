@@ -11,8 +11,6 @@ runs:
   # https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action
   using: composite
   steps:
-      - name: checkout the code
-        uses: actions/checkout@v6
       - name: install nodejs
         uses: actions/setup-node@v6
         with:

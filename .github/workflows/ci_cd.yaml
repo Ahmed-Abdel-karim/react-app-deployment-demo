@@ -13,6 +13,8 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
       - name: checkout the code and install dependencies
         uses: ./.github/actions/setup-repo
         with:
@@ -21,6 +23,8 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
       - name: checkout the code and install dependencies
         uses: ./.github/actions/setup-repo
         with:
