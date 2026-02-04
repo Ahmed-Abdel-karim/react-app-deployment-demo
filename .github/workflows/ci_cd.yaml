@@ -1,0 +1,40 @@
+# This is a ci cd pipeline
+
+name: CI
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]  
+  workflow_dispatch:
+  
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
+      - name: install nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: install dependencies
+        run: npm ci
+      - name: run linter
+        run: npm run lint
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
+      - name: install nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: install dependencies
+        run: npm ci
+      - name: run linter
+        run: npm run build
+        
