@@ -13,28 +13,16 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     steps:
-      - name: checkout the code
-        uses: actions/checkout@v6
-      - name: install nodejs
-        uses: actions/setup-node@v6
+      - name: checkout the code and install dependencies
+        uses: ./.github/actions/setup-repo
         with:
-          node-version: '24'
-      - name: install dependencies
-        run: npm ci
-      - name: run linter
-        run: npm run lint
+          npm_command: 'lint'
   build:
     name: build
     runs-on: ubuntu-latest
     steps:
-      - name: checkout the code
-        uses: actions/checkout@v6
-      - name: install nodejs
-        uses: actions/setup-node@v6
+      - name: checkout the code and install dependencies
+        uses: ./.github/actions/setup-repo
         with:
-          node-version: '24'
-      - name: install dependencies
-        run: npm ci
-      - name: run linter
-        run: npm run build
+          npm_command: 'build'
         

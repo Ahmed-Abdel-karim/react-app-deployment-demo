@@ -1,0 +1,27 @@
+name: 'prepare node environment and run npm command'
+description: 'checkout the code and install dependencies, then run a specified npm command'
+
+inputs:
+  npm_command:
+    description: 'The npm command to run after setup'
+    required: true
+
+runs:
+  # For more on composite actions, see:
+  # https://docs.github.com/en/actions/sharing-automations/creating-actions/creating-a-composite-action
+  using: composite
+  steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
+      - name: install nodejs
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+      - name: install dependencies
+        run: npm ci
+        shell: bash
+      - name: run ${{inputs.npm_command}}
+        run: npm run ${{inputs.npm_command}}
+        shell: bash
