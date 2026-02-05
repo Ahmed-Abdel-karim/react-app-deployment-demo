@@ -51,8 +51,6 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           name: dist
-      - name: checkout the code
-        uses: actions/checkout@v6
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
