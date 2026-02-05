@@ -9,27 +9,34 @@ on:
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # lint:
-  #   name: lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: checkout the code
-  #       uses: actions/checkout@v6
-  #     - name: checkout the code and install dependencies
-  #       uses: ./.github/actions/setup-repo
-  #       with:
-  #         npm_command: 'lint'
-  # build:
-  #   name: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: checkout the code
-  #       uses: actions/checkout@v6
-  #     - name: checkout the code and install dependencies
-  #       uses: ./.github/actions/setup-repo
-  #       with:
-  #         npm_command: 'build'
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
+      - name: checkout the code and install dependencies
+        uses: ./.github/actions/setup-repo
+        with:
+          npm_command: 'lint'
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout the code
+        uses: actions/checkout@v6
+      - name: checkout the code and install dependencies
+        uses: ./.github/actions/setup-repo
+        with:
+          npm_command: 'build'
+      - name: upload dist folder as artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
   depoly:
+    needs: build
     name: test aws
     runs-on: ubuntu-latest
     permissions:
@@ -38,7 +45,12 @@ jobs:
       role: arn:aws:iam::996264442117:role/CD_pipeline
       region: eu-north-1
       bucket: amzn-photo-001
+      distribution: E21RN5P40ZAH8P
     steps:
+      - name: download dist folder artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: dist
       - name: checkout the code
         uses: actions/checkout@v6
       - name: Configure AWS Credentials
@@ -46,11 +58,12 @@ jobs:
         with:
           role-to-assume: ${{env.role}}
           aws-region: ${{env.region}}
-      - name: Additional steps
+      - name: sync s3 bucket with dist folder
         run: |
-          # Your commands that require AWS credentials
-          aws sts get-caller-identity 
-          aws s3 ls ${{env.bucket}}
+          aws s3 sync dist/ s3://${{env.bucket}} --delete
+      - name: invalidate cloudfront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{env.distribution}} --paths "/*"
 
 
   
