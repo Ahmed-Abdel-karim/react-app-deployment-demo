@@ -9,24 +9,44 @@ on:
   
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  lint:
-    name: lint
+  # lint:
+  #   name: lint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: checkout the code
+  #       uses: actions/checkout@v6
+  #     - name: checkout the code and install dependencies
+  #       uses: ./.github/actions/setup-repo
+  #       with:
+  #         npm_command: 'lint'
+  # build:
+  #   name: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: checkout the code
+  #       uses: actions/checkout@v6
+  #     - name: checkout the code and install dependencies
+  #       uses: ./.github/actions/setup-repo
+  #       with:
+  #         npm_command: 'build'
+  depoly:
+    name: test aws
     runs-on: ubuntu-latest
+    env:
+      role: arn:aws:iam::996264442117:policy/CD_pipeline
+      region: eu-north-1
     steps:
       - name: checkout the code
         uses: actions/checkout@v6
-      - name: checkout the code and install dependencies
-        uses: ./.github/actions/setup-repo
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
         with:
-          npm_command: 'lint'
-  build:
-    name: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout the code
-        uses: actions/checkout@v6
-      - name: checkout the code and install dependencies
-        uses: ./.github/actions/setup-repo
-        with:
-          npm_command: 'build'
-        
+          role-to-assume: ${{env.role}}
+          aws-region: ${{env.region}}
+      - name: Additional steps
+        run: |
+          # Your commands that require AWS credentials
+          aws sts get-caller-identity 
+
+
+  
