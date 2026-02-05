@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{env.region}}
       - name: sync s3 bucket with dist folder
         run: |
-          aws s3 sync ${{env.distFolder}}/ s3://${{env.bucket}}/assets --delete --cache-control max-age=31536000,immutable --exclude "*.html"
+          aws s3 sync ${{env.distFolder}}/ s3://${{env.bucket}}/ --delete --cache-control max-age=31536000,immutable --exclude "*.html"
           aws s3 cp ${{env.distFolder}}/index.html s3://${{env.bucket}}/index.html --cache-control no-cache
 
       - name: invalidate cloudfront cache
