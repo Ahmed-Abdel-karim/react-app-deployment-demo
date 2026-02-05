@@ -48,13 +48,13 @@ jobs:
       region: eu-north-1
       bucket: amzn-photo-001
       distribution: E21RN5P40ZAH8P
-      distFolder: dist/
+      distFolder: dist
     steps:
       - name: download dist folder artifact
         uses: actions/download-artifact@v6
         with:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
-          path: dist
+          path: dist/
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
