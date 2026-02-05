@@ -35,7 +35,6 @@ jobs:
         uses: actions/upload-artifact@v6
         id: upload-dist
         with:
-          name: dist
           path: dist/
           retention-days: 1
   depoly:
@@ -49,6 +48,7 @@ jobs:
       region: eu-north-1
       bucket: amzn-photo-001
       distribution: E21RN5P40ZAH8P
+      distFolder: dist/
     steps:
       - name: download dist folder artifact
         uses: actions/download-artifact@v6
@@ -56,21 +56,17 @@ jobs:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
           path: dist/
 
-      - name: list dist folder
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{env.role}}
+          aws-region: ${{env.region}}
+      - name: sync s3 bucket with dist folder
         run: |
-          ls 
-
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v6
-      #   with:
-      #     role-to-assume: ${{env.role}}
-      #     aws-region: ${{env.region}}
-      # - name: sync s3 bucket with dist folder
-      #   run: |
-      #     aws s3 sync dist/ s3://${{env.bucket}} --delete
-      # - name: invalidate cloudfront cache
-      #   run: |
-      #     aws cloudfront create-invalidation --distribution-id ${{env.distribution}} --paths "/*"
+          aws s3 sync ${{env.distFolder}} s3://${{env.bucket}} --delete
+      - name: invalidate cloudfront cache
+        run: |
+          aws cloudfront create-invalidation --distribution-id ${{env.distribution}} --paths "/*"
 
 
   
