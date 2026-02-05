@@ -54,7 +54,7 @@ jobs:
         uses: actions/download-artifact@v6
         with:
           artifact-ids: ${{ needs.build.outputs.artifact-id }}
-          path: dist/
+          path: dist
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v6
@@ -63,7 +63,7 @@ jobs:
           aws-region: ${{env.region}}
       - name: sync s3 bucket with dist folder
         run: |
-          aws s3 sync ${{env.distFolder}} s3://${{env.bucket}}/static --delete --cache-control max-age=31536000,immutable --exclude "*.html"
+          aws s3 sync ${{env.distFolder}}/ s3://${{env.bucket}}/static --delete --cache-control max-age=31536000,immutable --exclude "*.html"
           aws s3 sync ${{env.distFolder}}/*.html s3://${{env.bucket}}/*.html --delete --cache-control no-cache
 
       - name: invalidate cloudfront cache
