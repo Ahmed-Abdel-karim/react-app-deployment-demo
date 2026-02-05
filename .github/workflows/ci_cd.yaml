@@ -22,6 +22,8 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    outputs:
+      artifact-id: ${{ steps.upload-dist.outputs.artifact-id }}
     steps:
       - name: checkout the code
         uses: actions/checkout@v6
@@ -31,6 +33,7 @@ jobs:
           npm_command: 'build'
       - name: upload dist folder as artifact
         uses: actions/upload-artifact@v6
+        id: upload-dist
         with:
           name: dist
           path: dist/
@@ -50,18 +53,22 @@ jobs:
       - name: download dist folder artifact
         uses: actions/download-artifact@v6
         with:
-          name: dist
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{env.role}}
-          aws-region: ${{env.region}}
-      - name: sync s3 bucket with dist folder
+          artifact-ids: ${{ needs.build.outputs.artifact-id }}
+      - name: list dist folder
         run: |
-          aws s3 sync dist/ s3://${{env.bucket}} --delete
-      - name: invalidate cloudfront cache
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{env.distribution}} --paths "/*"
+          ls 
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v6
+      #   with:
+      #     role-to-assume: ${{env.role}}
+      #     aws-region: ${{env.region}}
+      # - name: sync s3 bucket with dist folder
+      #   run: |
+      #     aws s3 sync dist/ s3://${{env.bucket}} --delete
+      # - name: invalidate cloudfront cache
+      #   run: |
+      #     aws cloudfront create-invalidation --distribution-id ${{env.distribution}} --paths "/*"
 
 
   
