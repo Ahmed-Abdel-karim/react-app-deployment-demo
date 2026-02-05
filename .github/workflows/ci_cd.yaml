@@ -33,7 +33,7 @@ jobs:
     name: test aws
     runs-on: ubuntu-latest
     env:
-      role: arn:aws:iam::996264442117:policy/CD_pipeline
+      role: arn:aws:iam::996264442117:role/CD_pipeline
       region: eu-north-1
       bucket: amzn-photo-001
     steps:
